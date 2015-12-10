@@ -1,0 +1,4 @@
+*.ogg
+/out
+/build/build.config
+/.idea/workspace.xml

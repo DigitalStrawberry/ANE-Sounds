@@ -1,0 +1,27 @@
+<extension xmlns="http://ns.adobe.com/air/extension/3.1"> 
+    <id>com.digitalstrawberry.nativeExtensions.ANESounds</id>
+    <versionNumber>1.0</versionNumber> 
+    <platforms>
+
+	<platform name="Android-ARM">
+	    <applicationDeployment>
+		<nativeLibrary>libANESounds.jar</nativeLibrary>
+		<initializer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</initializer>
+		<finalizer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</finalizer>
+	    </applicationDeployment>
+	</platform>
+	
+	<platform name="Android-x86">
+	    <applicationDeployment>
+		<nativeLibrary>libANESounds.jar</nativeLibrary>
+		<initializer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</initializer>
+		<finalizer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</finalizer>
+	    </applicationDeployment>
+	</platform>
+	
+	<platform name="default"> 
+	    <applicationDeployment/> 
+	</platform> 
+    
+    </platforms> 
+</extension>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<application xmlns="http://ns.adobe.com/air/application/20.0">
+
+    <id>com.ane-sounds-test</id>
+    <filename>ANE-Sounds-Test</filename>
+    <name>ANE Sounds Test</name>
+    <versionNumber>0.0.0</versionNumber>
+
+
+    <!-- Settings for the application's initial window. Required. -->
+    <initialWindow>
+        <content>[This value will be overwritten by Flash Builder in the output app.xml]</content>
+        <renderMode>cpu</renderMode>
+        <requestedDisplayResolution>high</requestedDisplayResolution>
+        <autoOrients>true</autoOrients>
+        <fullScreen>true</fullScreen>
+        <visible>true</visible>
+    </initialWindow>
+
+
+    <android>
+        <manifestAdditions><![CDATA[
+			<manifest android:installLocation="auto">
+				<uses-sdk android:minSdkVersion="8" />
+			</manifest>
+			
+		]]></manifestAdditions>
+    </android>
+    <iPhone>
+        <InfoAdditions><![CDATA[
+			<key>UIDeviceFamily</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+			</array>
+		]]></InfoAdditions>
+        <requestedDisplayResolution>high</requestedDisplayResolution>
+    </iPhone>
+    <extensions>
+        <extensionID>com.digitalstrawberry.nativeExtensions.ANESounds</extensionID>
+    </extensions>
+</application>
