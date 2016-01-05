@@ -12,14 +12,16 @@ Right now this extension is very basic and only works on Android. The goal is to
 
 ### Usage
 
-You can grab the ANE from the ```/bin``` folder of the repo.
+You can grab the ANE from the ```/bin``` folder of the repo or on the [releases](https://github.com/DigitalStrawberry/ANE-Sounds/releases) page of the repo.
 
-After including the ANE in your project, you'll need to package a sound file in your application's package. You can embed mp3, wav or ogg files. Note that this extension only works for sound files that have been embedded into the application package.
+After including the ANE in your project you'll need to reference a sound with a ```File``` object. The sound file can be embedded into your application or downloaded to an external directory. The extension can play mp3, wav or ogg files.
+
 
 Load the sound using the ANE:
 
 ```
-var soundId:int = ANESounds.instance.loadSound("click-sound.ogg");
+var soundFile:File = File.applicationDirectory.resolvePath("click-sound.ogg");
+var soundId:int = ANESounds.instance.loadSound(soundFile);
 ```
 
 Now you can play the sound using the ```soundId``` that was returned:
@@ -47,4 +49,9 @@ else
 	// Use another method to play sounds
 }
 ```
+
+### Changelog
+
+#### v1.0 (01/04/2015)
+- Added the ability to play sounds stored in any location using a ```File``` object
 

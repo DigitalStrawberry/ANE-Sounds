@@ -34,30 +34,46 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		}
 
 
-		public function loadSound(path:String):int
+		public function loadSound(file:File):int
 		{
 			if(_extContext == null)
 			{
 				return -1;
 			}
 
-			var file:File = File.applicationDirectory.resolvePath(path);
 			if(!file.exists)
 			{
 				throw new Error('Sound file ' + file.url + ' does not exist');
 			}
 
-			var newFilename:String = path.replace('/', '_');
-			file.copyTo(File.applicationStorageDirectory.resolvePath(newFilename), true);
-			var filePath:String = File.applicationStorageDirectory.nativePath + "/" + newFilename;
-
-			var returnObject:Object = _extContext.call('loadSound', filePath);
+			var returnObject:Object = _extContext.call('loadSound', getNativePath(file));
 			if(returnObject == null)
 			{
 				return -1;
 			}
 
 			return int(returnObject);
+		}
+
+
+		private function getNativePath(file:File):String
+		{
+			// Files located in the Application directory need to be moved so they can be properly read by the ANE.
+			// This is due to a bug in AIR that compresses embedded media assets in the Android package, even though
+			// the Android documentation states that these assets should not be compressed.
+			if(file.nativePath == "")
+			{
+				var tmpArray:Array = file.url.split('/');
+				var filename:String = tmpArray.pop();
+
+				var newFilename:String = filename.replace('/', '_');
+				var newFile:File = File.applicationStorageDirectory.resolvePath(newFilename);
+
+				file.copyTo(newFile, true);
+				return newFile.nativePath;
+			}
+
+			return file.nativePath;
 		}
 
 

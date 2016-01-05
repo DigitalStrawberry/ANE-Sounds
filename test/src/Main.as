@@ -6,6 +6,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.MouseEvent;
+	import flash.filesystem.File;
 	import flash.media.Sound;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
@@ -15,8 +16,6 @@ package
 	public class Main extends MovieClip
 	{
 		private var buttonFormat:TextFormat;
-
-		private var _clickSound:Sound;
 		private var _clickSoundId:int = -1;
 
 		public function Main()
@@ -49,7 +48,8 @@ package
 		{
 			if(_clickSoundId == -1)
 			{
-				_clickSoundId = ANESounds.instance.loadSound("include/click-sound.ogg");
+				var soundFile:File = File.applicationDirectory.resolvePath('include/click-sound.ogg');
+				_clickSoundId = ANESounds.instance.loadSound(soundFile);
 			}
 
 			ANESounds.instance.playSound(_clickSoundId);
