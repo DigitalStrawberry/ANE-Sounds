@@ -7,11 +7,9 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
-	import flash.media.Sound;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-
 
 	public class Main extends MovieClip
 	{
@@ -30,6 +28,20 @@ package
 			ANESounds.instance;
 
 			createButtons();
+
+			// Preload sounds
+			var soundFile:File;
+
+			if(ANESounds.isSupportedNatively())
+			{
+				soundFile = File.applicationDirectory.resolvePath('include/click.ogg');
+			}
+			else
+			{
+				soundFile = File.applicationDirectory.resolvePath('include/click.mp3');
+			}
+
+			_clickSoundId = ANESounds.instance.loadSound(soundFile);
 		}
 
 
@@ -46,13 +58,7 @@ package
 
 		private function playNativeSound(event:MouseEvent):void
 		{
-			if(_clickSoundId == -1)
-			{
-				var soundFile:File = File.applicationDirectory.resolvePath('include/click-sound.ogg');
-				_clickSoundId = ANESounds.instance.loadSound(soundFile);
-			}
-
-			ANESounds.instance.playSound(_clickSoundId);
+			ANESounds.instance.playSound(_clickSoundId, 0.2, 0.2);
 		}
 
 
