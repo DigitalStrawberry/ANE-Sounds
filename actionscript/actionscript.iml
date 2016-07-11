@@ -2,9 +2,9 @@
 <module type="Flex" version="4">
   <component name="FlexBuildConfigurationManager" active="actionscript">
     <configurations>
-      <configuration name="actionscript" target-platform="Mobile" pure-as="true" output-type="Library" output-file="actionscript.swc" output-folder="$MODULE_DIR$/../out/production/actionscript">
+      <configuration name="actionscript" target-platform="Mobile" pure-as="true" output-type="Library" output-file="actionscript.swc" output-folder="$DOCUMENTS$/Apps/libs/ANEs/ANE-Sounds/out/production/actionscript">
         <dependencies target-player="20.0">
-          <sdk name="20.0.0.178_beta" />
+          <sdk name="21.0.0.176" />
         </dependencies>
         <compiler-options />
         <packaging-air-desktop />
@@ -19,7 +19,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="20.0.0.178_beta" jdkType="Flex SDK Type (new)" />
+    <orderEntry type="jdk" jdkName="21.0.0.176" jdkType="Flex SDK Type (new)" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

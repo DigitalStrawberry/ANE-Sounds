@@ -2,6 +2,9 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 {
 	import flash.external.ExtensionContext;
 	import flash.filesystem.File;
+	import flash.media.Sound;
+	import flash.media.SoundTransform;
+	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 
 	public class ANESounds
@@ -9,6 +12,9 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		private static var _instance:ANESounds;
 
 		private var _extContext:ExtensionContext;
+
+		// Sounds array used for Flash fallback
+		private var _sounds:Array = [];
 
 		public function ANESounds()
 		{
@@ -18,10 +24,10 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			}
 			else
 			{
-				throw new Error('Class is a singleton');
+				throw new Error('Class is a singleton, use ANESounds.instance instead');
 			}
 
-			if(_android)
+			if(isSupportedNatively())
 			{
 				_extContext = ExtensionContext.createExtensionContext('com.digitalstrawberry.nativeExtensions.ANESounds', null);
 				if(_extContext == null)
@@ -36,23 +42,31 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 		public function loadSound(file:File):int
 		{
-			if(_extContext == null)
-			{
-				return -1;
-			}
-
 			if(!file.exists)
 			{
 				throw new Error('Sound file ' + file.url + ' does not exist');
 			}
 
-			var returnObject:Object = _extContext.call('loadSound', getNativePath(file));
-			if(returnObject == null)
+			// Fallback to Flash
+			if(_extContext == null)
 			{
-				return -1;
-			}
+				var sound:Sound = new Sound();
+				sound.load(new URLRequest(file.url));
 
-			return int(returnObject);
+				_sounds.push(sound);
+				return _sounds.length - 1;
+			}
+			// Load the file natively
+			else
+			{
+				var returnObject:Object = _extContext.call('loadSound', getNativePath(file));
+				if(returnObject == null)
+				{
+					return -1;
+				}
+
+				return int(returnObject);
+			}
 		}
 
 
@@ -81,10 +95,22 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				return;
-			}
+				if(_sounds.length > soundId)
+				{
+					var sound:Sound = _sounds[soundId];
 
-			_extContext.call('playSound', soundId, leftVolume, rightVolume, loop, playbackRate);
+					var totalVolume:Number = leftVolume + rightVolume;
+					var volume:Number = totalVolume / 2;
+					var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
+					var soundTransform:SoundTransform = new SoundTransform(volume, pan);
+
+					sound.play(0, loop, soundTransform);
+				}
+			}
+			else
+			{
+				_extContext.call('playSound', soundId, leftVolume, rightVolume, loop, playbackRate);
+			}
 		}
 
 
@@ -95,6 +121,12 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 
 		public static function isSupported():Boolean
+		{
+			return true;
+		}
+
+
+		public static function isSupportedNatively():Boolean
 		{
 			return _android;
 		}
