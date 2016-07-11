@@ -48,7 +48,7 @@ if(ANESounds.isSupportedNatively())
 // All other platforms
 else
 {
-	ANESounds.instance.loadSound(File.applicationDirectory.resolvePath("mp3"));
+	ANESounds.instance.loadSound(File.applicationDirectory.resolvePath("click.mp3"));
 }
 ```
 
