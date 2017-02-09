@@ -15,23 +15,30 @@ After including the ANE in your project you'll need to reference a sound with a 
 
 Load the sound using the ANE:
 
-```
+```as3
 var soundFile:File = File.applicationDirectory.resolvePath("click-sound.mp3");
 var soundId:int = ANESounds.instance.loadSound(soundFile);
 ```
 
 Now you can play the sound using the ```soundId``` that was returned:
 
-```
+```as3
 ANESounds.instance.playSound(soundId);
 ```
 The extension also supports more advanced playback options:
 
-```
+```as3
 ANESounds.instance.playSound(soundId:int, leftVolume:Number = 1.0, rightVolume:Number = 1.0, loop:int = 0, playbackRate:int = 1.0);
 ```
 
 **Note:** The ```playbackRate``` parameter is not currently supported on non-Android platforms and will always default to ```1.0```.
+
+You can unload a sound by passing its id to `unloadSound` method. It returns `true` if the sound for the given id was found. Note the sound is not immediately removed from the memory on non-Android platforms; it will be removed during the next garbage collection.
+
+```as3
+var unloaded:Boolean = ANESounds.instance.unloadSound(soundId);
+trace(unloaded);
+```
 
 ### Multiple Platforms
 
@@ -39,7 +46,7 @@ While the extension is designed for native Android use, it will fall back to usi
 
 If you'd like to only use mp3 sounds on fallback, you can use the ```isSupportedNatively``` method:
 
-```
+```as3
 // Android devices
 if(ANESounds.isSupportedNatively())
 {
@@ -53,6 +60,10 @@ else
 ```
 
 ### Changelog
+
+#### v1.2 (02/09/2017)
+
+- Added `unloadSound` API
 
 #### v1.1 (07/11/2016)
 
