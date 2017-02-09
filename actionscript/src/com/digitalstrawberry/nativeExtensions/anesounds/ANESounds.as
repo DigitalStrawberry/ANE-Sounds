@@ -9,12 +9,14 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 	public class ANESounds
 	{
+		public static const VERSION:String = "1.2";
 		private static var _instance:ANESounds;
 
 		private var _extContext:ExtensionContext;
 
 		// Sounds array used for Flash fallback
-		private var _sounds:Array = [];
+		private var _soundId:int;
+		private var _sounds:Vector.<SoundInfo> = new <SoundInfo>[];
 
 		public function ANESounds()
 		{
@@ -53,8 +55,8 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 				var sound:Sound = new Sound();
 				sound.load(new URLRequest(file.url));
 
-				_sounds.push(sound);
-				return _sounds.length - 1;
+				_sounds.push(new SoundInfo(_soundId, sound));
+				return _soundId++;
 			}
 			// Load the file natively
 			else
@@ -95,21 +97,56 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				if(_sounds.length > soundId)
+				for each(var soundInfo:SoundInfo in _sounds)
 				{
-					var sound:Sound = _sounds[soundId];
+					if(soundInfo.id == soundId)
+					{
+						var sound:Sound = soundInfo.sound;
 
-					var totalVolume:Number = leftVolume + rightVolume;
-					var volume:Number = totalVolume / 2;
-					var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
-					var soundTransform:SoundTransform = new SoundTransform(volume, pan);
-
-					sound.play(0, loop, soundTransform);
+						var totalVolume:Number = leftVolume + rightVolume;
+						var volume:Number = totalVolume / 2;
+						var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
+						var soundTransform:SoundTransform = new SoundTransform(volume, pan);
+						sound.play(0, loop, soundTransform);
+						return;
+					}
 				}
+				trace('[ANESounds] Sound with id', soundId, 'not found.');
 			}
 			else
 			{
 				_extContext.call('playSound', soundId, leftVolume, rightVolume, loop, playbackRate);
+			}
+		}
+
+
+		public function unloadSound(soundId:int):Boolean
+		{
+			if(_extContext == null)
+			{
+				var length:int = _sounds.length;
+				for(var i:int = 0; i < length; ++i)
+				{
+					var soundData:SoundInfo = _sounds[i];
+					if(soundData.id == soundId)
+					{
+						try
+						{
+							soundData.sound.close()
+						}
+						catch (error:Error)
+						{
+
+						}
+						_sounds.removeAt(i);
+						return true;
+					}
+				}
+				return false;
+			}
+			else
+			{
+				return _extContext.call('unloadSound', soundId) as Boolean;
 			}
 		}
 
