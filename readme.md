@@ -40,6 +40,18 @@ var unloaded:Boolean = ANESounds.instance.unloadSound(soundId);
 trace(unloaded);
 ```
 
+You can stop a sound that is currently playing by calling the `stopSound` method along with the sound id:
+
+```as3
+ANESounds.instance.stopSound(soundId);
+```
+
+You can also change the volume of a sound that is playing by calling the `setVolume` method. The volume values should be in range from 0 to 1.
+
+```as3
+ANESounds.instance.setVolume(soundId, leftVolume, rightVolume);
+```
+
 ### Multiple Platforms
 
 While the extension is designed for native Android use, it will fall back to using the as3 ```Sound``` object on non-supported platforms. Note that you can only use mp3 sounds if you wish to use the native as3 fallback functionality.
@@ -61,6 +73,10 @@ else
 
 ### Changelog
 
+#### v1.3 (04/24/2017)
+
+- Added `stopSound` and `setVolume` APIs
+
 #### v1.2 (02/09/2017)
 
 - Added `unloadSound` API
@@ -72,5 +88,6 @@ else
 - Added ```isSupportedNatively``` method to determine if the native Android code will be used to play the sound.
 
 #### v1.0 (01/04/2016)
+
 - Added the ability to play sounds stored in any location using a ```File``` object
 
