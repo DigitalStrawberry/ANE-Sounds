@@ -24,11 +24,12 @@ public class PlaySound implements FREFunction
 			loop = args[3].getAsInt();
 			playbackRate = (float) args[4].getAsDouble();
 
-			soundsContext.soundPool.play(soundId, leftVolume, rightVolume, 1, loop, playbackRate);
+			int streamId = soundsContext.soundPool.play(soundId, leftVolume, rightVolume, 1, loop, playbackRate);
+            soundsContext.soundToStream.put(soundId, streamId);
 		}
 		catch(Exception e)
 		{
-
+            e.printStackTrace();
 		}
 
 		return null;

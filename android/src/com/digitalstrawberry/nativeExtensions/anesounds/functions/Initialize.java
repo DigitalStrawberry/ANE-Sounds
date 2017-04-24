@@ -9,12 +9,16 @@ import com.adobe.fre.FREFunction;
 import com.adobe.fre.FREObject;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
+import java.util.HashMap;
+
 public class Initialize implements FREFunction
 {
 	@Override
 	public FREObject call( FREContext context, FREObject[] args )
 	{
 		ANESoundsContext soundsContext = (ANESoundsContext) context;
+
+        soundsContext.soundToStream = new HashMap<Integer, Integer>();
 
         // SoundPool constructor is deprecated since API 21
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

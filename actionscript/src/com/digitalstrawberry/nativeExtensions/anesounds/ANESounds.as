@@ -107,7 +107,11 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 						var volume:Number = totalVolume / 2;
 						var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
 						var soundTransform:SoundTransform = new SoundTransform(volume, pan);
-						sound.play(0, loop, soundTransform);
+						if(soundInfo.channel != null)
+						{
+							soundInfo.channel.stop();
+						}
+						soundInfo.channel = sound.play(0, loop, soundTransform);
 						return;
 					}
 				}
@@ -122,32 +126,90 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 		public function unloadSound(soundId:int):Boolean
 		{
+			stopSound(soundId);
+
 			if(_extContext == null)
 			{
-				var length:int = _sounds.length;
-				for(var i:int = 0; i < length; ++i)
+				var soundInfo:SoundInfo = getSoundInfo(soundId);
+				if(soundInfo != null)
 				{
-					var soundData:SoundInfo = _sounds[i];
-					if(soundData.id == soundId)
+					try
 					{
-						try
-						{
-							soundData.sound.close()
-						}
-						catch (error:Error)
-						{
-
-						}
-						_sounds.removeAt(i);
-						return true;
+						soundInfo.sound.close()
 					}
+					catch (error:Error) {}
+					_sounds.removeAt(_sounds.indexOf(soundInfo));
 				}
-				return false;
+				return soundInfo != null;
 			}
 			else
 			{
 				return _extContext.call('unloadSound', soundId) as Boolean;
 			}
+		}
+
+
+		public function stopSound(streamId:int):void
+		{
+			if(_extContext == null)
+			{
+				var soundInfo:SoundInfo = getSoundInfo(streamId);
+				if(soundInfo != null && soundInfo.channel != null)
+				{
+					soundInfo.channel.stop();
+				}
+			}
+			else
+			{
+				_extContext.call('stopSound', streamId);
+			}
+		}
+		
+		
+		public function setVolume(streamId:int, leftVolume:Number = 1, rightVolume:Number = 1):void
+		{
+			if(_extContext == null)
+			{
+				var soundInfo:SoundInfo = getSoundInfo(streamId);
+				if(soundInfo != null && soundInfo.channel != null)
+				{
+					var totalVolume:Number = leftVolume + rightVolume;
+					var volume:Number = totalVolume / 2;
+					var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
+					soundInfo.channel.soundTransform = new SoundTransform(volume, pan);
+				}
+			}
+			else
+			{
+				_extContext.call('setVolume', streamId, clampVolume(leftVolume), clampVolume(rightVolume));
+			}
+		}
+		
+		
+		private function clampVolume(volume:Number):Number
+		{
+			if(volume > 1)
+			{
+				return 1;
+			}
+			if(volume < 0)
+			{
+				return 0;
+			}
+			return volume;
+		}
+
+
+		private function getSoundInfo(soundId:int):SoundInfo
+		{
+			for each(var soundInfo:SoundInfo in _sounds)
+			{
+			    if(soundInfo.id == soundId)
+			    {
+				    return soundInfo;
+			    }
+			}
+			return null;
 		}
 
 

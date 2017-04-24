@@ -6,7 +6,7 @@ import com.adobe.fre.FREFunction;
 import com.adobe.fre.FREObject;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
-public class UnloadSound implements FREFunction {
+public class StopSound implements FREFunction {
 
     @Override
     public FREObject call(FREContext context, FREObject[] args) {
@@ -16,14 +16,16 @@ public class UnloadSound implements FREFunction {
         try
         {
             soundId = args[0].getAsInt();
-
-            soundsContext.soundToStream.remove(soundId);
-
-            return FREObject.newObject(soundsContext.soundPool.unload(soundId));
+            Integer streamId = soundsContext.soundToStream.get(soundId);
+            if(streamId != null)
+            {
+                soundsContext.soundPool.stop(streamId);
+            }
+            return null;
         }
         catch(Exception e)
         {
-            Log.e("ANESounds", "Failed to unload sound: " + e.getLocalizedMessage());
+            Log.e("ANESounds", "Failed to stop sound: " + e.getLocalizedMessage());
         }
 
         return null;
