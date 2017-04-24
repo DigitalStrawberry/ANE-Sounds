@@ -1,2 +1,3 @@
 This library uses these sounds from freesound:
 Click by lebcraftlp (https://www.freesound.org/people/lebcraftlp/sounds/192277/)
+Melody 100 Bpm by Greek555 (https://www.freesound.org/people/Greek555/sounds/388472/)
