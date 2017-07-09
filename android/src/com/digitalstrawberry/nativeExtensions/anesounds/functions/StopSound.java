@@ -11,16 +11,12 @@ public class StopSound implements FREFunction {
     @Override
     public FREObject call(FREContext context, FREObject[] args) {
         ANESoundsContext soundsContext = (ANESoundsContext) context;
-        int soundId;
+        int streamId;
 
         try
         {
-            soundId = args[0].getAsInt();
-            Integer streamId = soundsContext.soundToStream.get(soundId);
-            if(streamId != null)
-            {
-                soundsContext.soundPool.stop(streamId);
-            }
+            streamId = args[0].getAsInt();
+            soundsContext.soundPool.stop(streamId);
             return null;
         }
         catch(Exception e)

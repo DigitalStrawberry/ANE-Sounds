@@ -1,22 +1,29 @@
 package com.digitalstrawberry.nativeExtensions.anesounds
 {
+	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
 	import flash.external.ExtensionContext;
 	import flash.filesystem.File;
 	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
+	import flash.utils.Dictionary;
 
 	public class ANESounds
 	{
 		public static const VERSION:String = "1.4";
 		private static var _instance:ANESounds;
+		private static var sMaxStreams:int = 10;
+		private static var sStreamId:int = 0;
 
 		private var _extContext:ExtensionContext;
 
 		// Sounds array used for Flash fallback
 		private var _soundId:int;
 		private var _sounds:Vector.<SoundInfo> = new <SoundInfo>[];
+		private var _streams:Dictionary = new Dictionary();
 
 		public function ANESounds()
 		{
@@ -37,8 +44,22 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 					throw new Error('Extension context could not be created!');
 				}
 
-				_extContext.call('initialize');
+				_extContext.call('initialize', sMaxStreams);
 			}
+		}
+
+
+		public static function setMaxStreams(value:int):void
+		{
+			if(value <= 0)
+			{
+				throw new ArgumentError("The number of streams must be greater than zero.")
+			}
+			if(_instance != null)
+			{
+				throw new IllegalOperationError("Maximum streams must be set before calling any other API.");
+			}
+			sMaxStreams = value;
 		}
 
 
@@ -93,7 +114,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		}
 
 
-		public function playSound(soundId:int, leftVolume:Number = 1.0, rightVolume:Number = 1.0, loop:int = 0, playbackRate:Number = 1.0):void
+		public function playSound(soundId:int, leftVolume:Number = 1.0, rightVolume:Number = 1.0, loop:int = 0, playbackRate:Number = 1.0):int
 		{
 			if(_extContext == null)
 			{
@@ -107,32 +128,40 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 						var volume:Number = totalVolume / 2;
 						var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
 						var soundTransform:SoundTransform = new SoundTransform(volume, pan);
-						if(soundInfo.channel != null)
-						{
-							soundInfo.channel.stop();
-						}
-						soundInfo.channel = sound.play(0, loop, soundTransform);
-						return;
+
+						sStreamId++;
+						var channel:SoundChannel = sound.play(0, loop, soundTransform);
+						channel.addEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
+						_streams[sStreamId] = channel;
+						soundInfo.addStream(sStreamId);
+						return sStreamId;
 					}
 				}
 				trace('[ANESounds] Sound with id', soundId, 'not found.');
+				return 0;
 			}
-			else
-			{
-				_extContext.call('playSound', soundId, leftVolume, rightVolume, loop, playbackRate);
-			}
+
+			return _extContext.call('playSound', soundId, leftVolume, rightVolume, loop, playbackRate) as int;
 		}
 
 
 		public function unloadSound(soundId:int):Boolean
 		{
-			stopSound(soundId);
-
 			if(_extContext == null)
 			{
 				var soundInfo:SoundInfo = getSoundInfo(soundId);
 				if(soundInfo != null)
 				{
+					// Stop all streams for this sound
+					for each(var streamId:int in soundInfo.streams)
+					{
+						if(streamId in _streams)
+						{
+							trace("Stopping", streamId, "for sound", soundId);
+							stopStream(streamId);
+						}
+					}
+
 					try
 					{
 						soundInfo.sound.close()
@@ -144,24 +173,25 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			}
 			else
 			{
+				// todo: likely need to stop the native sound first?
 				return _extContext.call('unloadSound', soundId) as Boolean;
 			}
 		}
 
 
-		public function stopSound(streamId:int):void
+		public function stopStream(streamId:int):void
 		{
 			if(_extContext == null)
 			{
-				var soundInfo:SoundInfo = getSoundInfo(streamId);
-				if(soundInfo != null && soundInfo.channel != null)
+				if(streamId in _streams)
 				{
-					soundInfo.channel.stop();
+					SoundChannel(_streams[streamId]).stop();
+					deleteStream(streamId);
 				}
 			}
 			else
 			{
-				_extContext.call('stopSound', streamId);
+				_extContext.call('stopStream', streamId);
 			}
 		}
 		
@@ -170,19 +200,40 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				var soundInfo:SoundInfo = getSoundInfo(streamId);
-				if(soundInfo != null && soundInfo.channel != null)
+				if(streamId in _streams)
 				{
 					var totalVolume:Number = leftVolume + rightVolume;
 					var volume:Number = totalVolume / 2;
 					var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
-					soundInfo.channel.soundTransform = new SoundTransform(volume, pan);
+					SoundChannel(_streams[streamId]).soundTransform = new SoundTransform(volume, pan);
 				}
 			}
 			else
 			{
 				_extContext.call('setVolume', streamId, clampVolume(leftVolume), clampVolume(rightVolume));
 			}
+		}
+
+
+		private function onSoundChannelCompleted(event:Event):void
+		{
+			var channel:SoundChannel = SoundChannel(event.currentTarget);
+			for(var streamId:int in _streams)
+			{
+				if(channel == _streams[streamId])
+				{
+					deleteStream(streamId);
+					return;
+				}
+			}
+		}
+
+
+		private function deleteStream(streamId:int):void
+		{
+			var channel:SoundChannel = _streams[streamId];
+			channel.removeEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
+			delete _streams[streamId];
 		}
 		
 		

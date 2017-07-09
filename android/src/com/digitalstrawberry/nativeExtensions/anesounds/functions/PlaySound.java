@@ -5,6 +5,9 @@ import com.adobe.fre.FREFunction;
 import com.adobe.fre.FREObject;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlaySound implements FREFunction
 {
 	@Override
@@ -25,7 +28,17 @@ public class PlaySound implements FREFunction
 			playbackRate = (float) args[4].getAsDouble();
 
 			int streamId = soundsContext.soundPool.play(soundId, leftVolume, rightVolume, 1, loop, playbackRate);
-            soundsContext.soundToStream.put(soundId, streamId);
+            if(streamId != 0)
+            {
+                List<Integer> soundStreams = soundsContext.soundStreams.get(soundId);
+                if(soundStreams == null)
+                {
+                    soundStreams = new ArrayList<Integer>();
+                }
+                soundStreams.add(streamId);
+                soundsContext.soundStreams.put(soundId, soundStreams);
+            }
+            return FREObject.newObject(streamId);
 		}
 		catch(Exception e)
 		{

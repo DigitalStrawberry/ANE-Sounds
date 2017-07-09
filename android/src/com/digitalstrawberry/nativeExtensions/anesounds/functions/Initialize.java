@@ -4,12 +4,12 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import com.adobe.fre.FREContext;
-import com.adobe.fre.FREFunction;
-import com.adobe.fre.FREObject;
+import android.util.Log;
+import com.adobe.fre.*;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Initialize implements FREFunction
 {
@@ -18,7 +18,16 @@ public class Initialize implements FREFunction
 	{
 		ANESoundsContext soundsContext = (ANESoundsContext) context;
 
-        soundsContext.soundToStream = new HashMap<Integer, Integer>();
+        soundsContext.soundStreams = new HashMap<Integer, List<Integer>>();
+
+        int maxStreams = 1;
+        try
+        {
+            maxStreams = args[0].getAsInt();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         // SoundPool constructor is deprecated since API 21
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -30,11 +39,12 @@ public class Initialize implements FREFunction
 
             soundsContext.soundPool = new SoundPool.Builder()
                     .setAudioAttributes(attributes)
+                    .setMaxStreams(maxStreams)
                     .build();
         }
         else
         {
-            soundsContext.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+            soundsContext.soundPool = new SoundPool(maxStreams, AudioManager.STREAM_MUSIC, 0);
         }
         context.getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
 

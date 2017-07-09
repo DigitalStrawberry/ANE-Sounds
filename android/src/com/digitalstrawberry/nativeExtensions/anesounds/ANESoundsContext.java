@@ -6,12 +6,15 @@ import com.adobe.fre.FREFunction;
 import com.digitalstrawberry.nativeExtensions.anesounds.functions.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ANESoundsContext extends FREContext
 {
 	public SoundPool soundPool;
-    public Map<Integer, Integer> soundToStream;
+
+    // Sound id mapped to a list of stream ids
+    public Map<Integer, List<Integer>> soundStreams;
 
 	ANESoundsContext()
 	{

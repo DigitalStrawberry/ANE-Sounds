@@ -14,15 +14,11 @@ public class SetVolume implements FREFunction {
 
         try
         {
-            int soundId = args[0].getAsInt();
+            int streamId = args[0].getAsInt();
             float leftVolume = (float) args[1].getAsDouble();
             float rightVolume = (float) args[2].getAsDouble();
 
-            Integer streamId = soundsContext.soundToStream.get(soundId);
-            if(streamId != null)
-            {
-                soundsContext.soundPool.setVolume(streamId, leftVolume, rightVolume);
-            }
+            soundsContext.soundPool.setVolume(streamId, leftVolume, rightVolume);
         }
         catch(Exception e)
         {

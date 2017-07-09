@@ -6,6 +6,8 @@ import com.adobe.fre.FREFunction;
 import com.adobe.fre.FREObject;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
+import java.util.List;
+
 public class UnloadSound implements FREFunction {
 
     @Override
@@ -17,7 +19,16 @@ public class UnloadSound implements FREFunction {
         {
             soundId = args[0].getAsInt();
 
-            soundsContext.soundToStream.remove(soundId);
+            // Stop all streams for this sound
+            List<Integer> streams = soundsContext.soundStreams.get(soundId);
+            if(streams != null)
+            {
+                for (Integer streamId : streams)
+                {
+                    soundsContext.soundPool.stop(streamId);
+                }
+                soundsContext.soundStreams.remove(soundId);
+            }
 
             return FREObject.newObject(soundsContext.soundPool.unload(soundId));
         }
