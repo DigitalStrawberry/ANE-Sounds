@@ -9,7 +9,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 	public class ANESounds
 	{
-		public static const VERSION:String = "1.3";
+		public static const VERSION:String = "1.4";
 		private static var _instance:ANESounds;
 
 		private var _extContext:ExtensionContext;
