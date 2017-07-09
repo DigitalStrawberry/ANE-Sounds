@@ -12,6 +12,11 @@ You can grab the ANE from the ```/bin``` folder of the repo or on the [releases]
 
 After including the ANE in your project you'll need to reference a sound with a ```File``` object. The sound file can be embedded into your application or downloaded to an external directory. The extension can play mp3, wav or ogg files on Android, however it can only play mp3 files on non-Android platforms.
 
+On Android it is allowed to run 10 sound streams simultaneously by default. If you play more streams than that, the oldest streams will be stopped. You can increase this limit by calling the `setMaxStreams` method. Note you must call it before using any other API:
+
+```as3
+ANESounds.setMaxStreams(30);
+```
 
 Load the sound using the ANE:
 
@@ -25,6 +30,7 @@ Now you can play the sound using the ```soundId``` that was returned:
 ```as3
 ANESounds.instance.playSound(soundId);
 ```
+
 The extension also supports more advanced playback options:
 
 ```as3
@@ -33,23 +39,28 @@ ANESounds.instance.playSound(soundId:int, leftVolume:Number = 1.0, rightVolume:N
 
 **Note:** The ```playbackRate``` parameter is not currently supported on non-Android platforms and will always default to ```1.0```.
 
-You can unload a sound by passing its id to `unloadSound` method. It returns `true` if the sound for the given id was found. Note the sound is not immediately removed from the memory on non-Android platforms; it will be removed during the next garbage collection.
+The `playSound` method returns a *stream id*. You need to keep a reference to this value to be able to further interact with the stream. To stop a currently playing stream, call the `stopStream` method:
+
+```as3
+var streamId:int = ANESounds.instance.playSound(soundId);
+
+if(streamId != 0)
+{
+	ANESounds.instance.stopStream(streamId);
+}
+```
+
+You can also change the volume of a stream by calling the `setVolume` method. The volume values should be in range from 0 to 1.
+
+```as3
+ANESounds.instance.setVolume(streamId, leftVolume, rightVolume);
+```
+
+You can unload a sound by passing its id to the `unloadSound` method. All active streams for the given sound will be stopped as well. The method returns `true` if the sound for the given id was found. Note the sound is not immediately removed from the memory on non-Android platforms; it will be removed during the next garbage collection.
 
 ```as3
 var unloaded:Boolean = ANESounds.instance.unloadSound(soundId);
 trace(unloaded);
-```
-
-You can stop a sound that is currently playing by calling the `stopSound` method along with the sound id:
-
-```as3
-ANESounds.instance.stopSound(soundId);
-```
-
-You can also change the volume of a sound that is playing by calling the `setVolume` method. The volume values should be in range from 0 to 1.
-
-```as3
-ANESounds.instance.setVolume(soundId, leftVolume, rightVolume);
 ```
 
 ### Multiple Platforms
