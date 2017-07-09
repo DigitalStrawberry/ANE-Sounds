@@ -18,11 +18,19 @@ package
 		private var _soundId1:int = -1;
 		private var _soundId2:int = -1;
 
+		private var _streams1:Vector.<int>;
+		private var _streams2:Vector.<int>;
+
 		public function Main()
 		{
 			super();
 
 			trace("Version", ANESounds.VERSION);
+
+			ANESounds.setMaxStreams(37);
+
+			_streams1 = new <int>[];
+			_streams2 = new <int>[];
 
 			// support autoOrients
 			stage.align = StageAlign.TOP_LEFT;
@@ -105,14 +113,14 @@ package
 		private function playNativeSound1(event:MouseEvent):void
 		{
 			trace("Sound", _soundId1);
-			ANESounds.instance.playSound(_soundId1, 0.4, 0.4);
+			_streams1[_streams1.length] = ANESounds.instance.playSound(_soundId1, 0.4, 0.4);
 		}
 
 
 		private function playNativeSound2(event:MouseEvent):void
 		{
 			trace("Sound", _soundId2);
-			ANESounds.instance.playSound(_soundId2, 0.4, 0.4);
+			_streams2[_streams2.length] = ANESounds.instance.playSound(_soundId2, 0.4, 0.4);
 		}
 
 
@@ -132,7 +140,13 @@ package
 		{
 			trace("Stop sound", _soundId1);
 
-			ANESounds.instance.stopSound(_soundId1);
+			for each(var streamId:int in _streams1)
+			{
+				trace("Stopping sound #1 stream =", streamId);
+				ANESounds.instance.stopSound(streamId);
+			}
+			trace();
+			_streams1.length = 0;
 		}
 
 
@@ -140,7 +154,13 @@ package
 		{
 			trace("Stop sound", _soundId2);
 
-			ANESounds.instance.stopSound(_soundId2);
+			for each(var streamId:int in _streams2)
+			{
+				trace("Stopping sound #2 stream =", streamId);
+				ANESounds.instance.stopSound(streamId);
+			}
+			trace();
+			_streams2.length = 0;
 		}
 
 
@@ -150,7 +170,12 @@ package
 			var rightVolume:Number = Math.random();
 			trace("Set volume for sound", _soundId1, "left volume:", leftVolume, "right volume:", rightVolume);
 
-			ANESounds.instance.setVolume(_soundId1, leftVolume, rightVolume);
+			for each(var streamId:int in _streams1)
+			{
+				trace("Setting volume for sound #1 stream =", streamId);
+				ANESounds.instance.setVolume(streamId, leftVolume, rightVolume);
+			}
+			trace();
 		}
 
 
@@ -160,7 +185,12 @@ package
 			var rightVolume:Number = Math.random();
 			trace("Set volume for sound", _soundId2, "left volume:", leftVolume, "right volume:", rightVolume);
 
-			ANESounds.instance.setVolume(_soundId2, leftVolume, rightVolume);
+			for each(var streamId:int in _streams2)
+			{
+				trace("Setting volume for sound #2 stream =", streamId);
+				ANESounds.instance.setVolume(streamId, leftVolume, rightVolume);
+			}
+			trace();
 		}
 
 
