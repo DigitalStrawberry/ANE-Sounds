@@ -143,7 +143,7 @@ package
 			for each(var streamId:int in _streams1)
 			{
 				trace("Stopping sound #1 stream =", streamId);
-				ANESounds.instance.stopSound(streamId);
+				ANESounds.instance.stopStream(streamId);
 			}
 			trace();
 			_streams1.length = 0;
@@ -157,7 +157,7 @@ package
 			for each(var streamId:int in _streams2)
 			{
 				trace("Stopping sound #2 stream =", streamId);
-				ANESounds.instance.stopSound(streamId);
+				ANESounds.instance.stopStream(streamId);
 			}
 			trace();
 			_streams2.length = 0;
