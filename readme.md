@@ -84,21 +84,28 @@ else
 
 ### Changelog
 
+#### v1.4 (07/09/2017)
+
+Added support for multiple streams
+
+* Added static method `setMaxStreams`
+* Renamed `stopSound` method to `stopStream`
+
 #### v1.3 (04/24/2017)
 
-- Added `stopSound` and `setVolume` APIs
+* Added `stopSound` and `setVolume` APIs
 
 #### v1.2 (02/09/2017)
 
-- Added `unloadSound` API
+* Added `unloadSound` API
 
 #### v1.1 (07/11/2016)
 
-- Added native as3 fallback support for non-supported platforms
-- The ```isSupported``` method now returns true for all platforms. Note that this may break existing code if you are not using mp3 sounds, as the native as3 code can only play mp3. Use the method ```isSupportedNatively``` to determine if the native Android code will be used to play a sound.
-- Added ```isSupportedNatively``` method to determine if the native Android code will be used to play the sound.
+* Added native as3 fallback support for non-supported platforms
+* The ```isSupported``` method now returns true for all platforms. Note that this may break existing code if you are not using mp3 sounds, as the native as3 code can only play mp3. Use the method ```isSupportedNatively``` to determine if the native Android code will be used to play a sound.
+* Added ```isSupportedNatively``` method to determine if the native Android code will be used to play the sound.
 
 #### v1.0 (01/04/2016)
 
-- Added the ability to play sounds stored in any location using a ```File``` object
+* Added the ability to play sounds stored in any location using a ```File``` object
 
