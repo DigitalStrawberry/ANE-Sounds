@@ -13,7 +13,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 	public class ANESounds
 	{
-		public static const VERSION:String = "1.4";
+		public static const VERSION:String = "1.5";
 		private static var _instance:ANESounds;
 		private static var sMaxStreams:int = 10;
 		private static var sStreamId:int = 0;
