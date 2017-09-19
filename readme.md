@@ -25,7 +25,19 @@ var soundFile:File = File.applicationDirectory.resolvePath("click-sound.mp3");
 var soundId:int = ANESounds.instance.loadSound(soundFile);
 ```
 
-Now you can play the sound using the ```soundId``` that was returned:
+Note the sound may not be available to be played immediately after the `loadSound` method is called. You can add an event listener to find out when a sound is loaded:
+
+```as3
+ANESounds.instance.addEventListener(SoundEvent.LOAD, onSoundLoaded);
+var soundId:int = ANESounds.instance.loadSound(...);
+
+private function onSoundLoaded(event:SoundEvent):void
+{
+    trace("Sound", event.soundId, "loaded");
+}
+```
+
+Once the sound is loaded, you can play it by providing the ```soundId``` that was returned by the `loadSound` method or the `SoundEvent` object:
 
 ```as3
 ANESounds.instance.playSound(soundId);
@@ -83,6 +95,10 @@ else
 ```
 
 ### Changelog
+
+#### v1.5 (09/19/2017)
+
+* Updated Android implementation with queued sound loading
 
 #### v1.4 (07/09/2017)
 
