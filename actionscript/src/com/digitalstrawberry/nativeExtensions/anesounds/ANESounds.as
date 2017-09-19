@@ -2,6 +2,9 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.ProgressEvent;
+	import flash.events.StatusEvent;
 	import flash.external.ExtensionContext;
 	import flash.filesystem.File;
 	import flash.media.Sound;
@@ -11,7 +14,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
-	public class ANESounds
+	public class ANESounds extends EventDispatcher
 	{
 		public static const VERSION:String = "1.5";
 		private static var _instance:ANESounds;
@@ -44,6 +47,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 					throw new Error('Extension context could not be created!');
 				}
 
+				_extContext.addEventListener(StatusEvent.STATUS, onStatus);
 				_extContext.call('initialize', sMaxStreams);
 			}
 		}
@@ -74,6 +78,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			if(_extContext == null)
 			{
 				var sound:Sound = new Sound();
+				sound.addEventListener(ProgressEvent.PROGRESS, onSoundLoadProgress, false, 0, true);
 				sound.load(new URLRequest(file.url));
 
 				_sounds.push(new SoundInfo(_soundId, sound));
@@ -89,6 +94,32 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 				}
 
 				return int(returnObject);
+			}
+		}
+
+
+		private function onSoundLoadProgress(event:ProgressEvent):void
+		{
+			var perc:Number = event.bytesLoaded / event.bytesTotal;
+			if(perc >= 1.0)
+			{
+				var sound:Sound = event.currentTarget as Sound;
+				sound.removeEventListener(ProgressEvent.PROGRESS, onSoundLoadProgress);
+
+				var soundId:int = -1;
+				for each(var soundInfo:SoundInfo in _sounds)
+				{
+					if(soundInfo.sound == sound)
+					{
+						soundId = soundInfo.id;
+						break;
+					}
+				}
+
+				if(soundId >= 0)
+				{
+					dispatchEvent(new SoundEvent(SoundEvent.LOAD, soundId));
+				}
 			}
 		}
 
@@ -157,7 +188,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 					{
 						if(streamId in _streams)
 						{
-							trace("Stopping", streamId, "for sound", soundId);
+							trace("[ANESounds] Stopping", streamId, "for sound", soundId);
 							stopStream(streamId);
 						}
 					}
@@ -211,6 +242,19 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			else
 			{
 				_extContext.call('setVolume', streamId, clampVolume(leftVolume), clampVolume(rightVolume));
+			}
+		}
+
+
+		private function onStatus(event:StatusEvent):void
+		{
+			if(event.code == SoundEvent.LOAD)
+			{
+				var soundId:int = int(event.level);
+				if(soundId >= 0)
+				{
+					dispatchEvent(new SoundEvent(SoundEvent.LOAD, soundId));
+				}
 			}
 		}
 
