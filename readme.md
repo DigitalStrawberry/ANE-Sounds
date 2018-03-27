@@ -96,6 +96,10 @@ else
 
 ### Changelog
 
+#### v1.6 (03/27/2018)
+
+* Fixed `stopStream` method on Android
+
 #### v1.5 (09/19/2017)
 
 * Updated Android implementation with queued sound loading
