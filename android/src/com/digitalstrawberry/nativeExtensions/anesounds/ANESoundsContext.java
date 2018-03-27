@@ -35,7 +35,7 @@ public class ANESoundsContext extends FREContext
 		functionMap.put("loadSound", new LoadSound());
 		functionMap.put("playSound", new PlaySound());
 		functionMap.put("unloadSound", new UnloadSound());
-		functionMap.put("stopSound", new StopSound());
+		functionMap.put("stopStream", new StopStream());
 		functionMap.put("setVolume", new SetVolume());
 
 		return functionMap;

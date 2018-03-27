@@ -6,7 +6,7 @@ import com.adobe.fre.FREFunction;
 import com.adobe.fre.FREObject;
 import com.digitalstrawberry.nativeExtensions.anesounds.ANESoundsContext;
 
-public class StopSound implements FREFunction {
+public class StopStream implements FREFunction {
 
     @Override
     public FREObject call(FREContext context, FREObject[] args) {
@@ -21,7 +21,7 @@ public class StopSound implements FREFunction {
         }
         catch(Exception e)
         {
-            Log.e("ANESounds", "Failed to stop sound: " + e.getLocalizedMessage());
+            Log.e("ANESounds", "Failed to stop stream: " + e.getLocalizedMessage());
         }
 
         return null;
