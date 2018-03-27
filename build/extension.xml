@@ -1,6 +1,6 @@
 <extension xmlns="http://ns.adobe.com/air/extension/3.1"> 
     <id>com.digitalstrawberry.nativeExtensions.ANESounds</id>
-    <versionNumber>1.5</versionNumber> 
+    <versionNumber>1.6</versionNumber> 
     <platforms>
 
 	<platform name="Android-ARM">
