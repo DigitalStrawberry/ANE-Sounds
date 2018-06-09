@@ -96,6 +96,10 @@ else
 
 ### Changelog
 
+#### v1.7 (06/09/2018)
+
+* Fixed issue with identical sound file names (Android)
+
 #### v1.6 (03/27/2018)
 
 * Fixed `stopStream` method on Android
