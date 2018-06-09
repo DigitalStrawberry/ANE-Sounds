@@ -131,10 +131,10 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			// the Android documentation states that these assets should not be compressed.
 			if(file.nativePath == "")
 			{
-				var tmpArray:Array = file.url.split('/');
-				var filename:String = tmpArray.pop();
+				var newFilename:String = file.url;
+				newFilename = newFilename.replace(/\//g, "_");
+				newFilename = newFilename.replace(/:/g, "");
 
-				var newFilename:String = filename.replace('/', '_');
 				var newFile:File = File.applicationStorageDirectory.resolvePath(newFilename);
 
 				file.copyTo(newFile, true);
