@@ -210,6 +210,22 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		}
 
 
+		public function stopAllStreams():void
+		{
+			if(_extContext == null)
+			{
+				for(var streamId:int in _streams)
+				{
+					stopStream(streamId);
+				}
+			}
+			else
+			{
+				_extContext.call('stopAllStreams');
+			}
+		}
+
+
 		public function stopStream(streamId:int):void
 		{
 			if(_extContext == null)
