@@ -26,6 +26,11 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		// Sounds array used for Flash fallback
 		private var _soundId:int;
 		private var _sounds:Vector.<SoundInfo> = new <SoundInfo>[];
+		
+		// Sound id mapped to a list of stream ids
+		private var _soundStreams:Dictionary = new Dictionary();
+
+		// Stream id mapped to a SoundChannel
 		private var _streams:Dictionary = new Dictionary();
 
 		public function ANESounds()
@@ -160,11 +165,22 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 						var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
 						var soundTransform:SoundTransform = new SoundTransform(volume, pan);
 
+						// Generate new stream for this sound
 						sStreamId++;
 						var channel:SoundChannel = sound.play(0, loop, soundTransform);
 						channel.addEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
 						_streams[sStreamId] = channel;
 						soundInfo.addStream(sStreamId);
+
+						// Store stream id for this sound
+						var activeStreams:Array = _soundStreams[soundId];
+						if(activeStreams == null)
+						{
+							activeStreams = [];
+						}
+						activeStreams[activeStreams.length] = sStreamId;
+						_soundStreams[soundId] = activeStreams;
+
 						return sStreamId;
 					}
 				}
@@ -204,7 +220,6 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			}
 			else
 			{
-				// todo: likely need to stop the native sound first?
 				return _extContext.call('unloadSound', soundId) as Boolean;
 			}
 		}
@@ -222,6 +237,26 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 			else
 			{
 				_extContext.call('stopAllStreams');
+			}
+		}
+
+
+		public function stopStreamsForSound(soundId:int):void
+		{
+			if(_extContext == null)
+			{
+				var streams:Array = _soundStreams[soundId];
+				if(streams != null)
+				{
+					for each(var streamId:int in streams)
+					{
+						stopStream(streamId);
+					}
+				}
+			}
+			else
+			{
+				_extContext.call('stopStreamsForSound', soundId);
 			}
 		}
 
