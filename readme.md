@@ -62,6 +62,13 @@ if(streamId != 0)
 }
 ```
 
+It is possible to stop all streams for a given sound, or all streams for all sounds:
+
+```as3
+ANESounds.instance.stopStreamsForSound(soundId);
+ANESounds.instance.stopAllStreams();
+```
+
 You can also change the volume of a stream by calling the `setVolume` method. The volume values should be in range from 0 to 1.
 
 ```as3
