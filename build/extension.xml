@@ -10,6 +10,14 @@
 		<finalizer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</finalizer>
 	    </applicationDeployment>
 	</platform>
+
+	<platform name="Android-ARM64">
+	    <applicationDeployment>
+		<nativeLibrary>libANESounds.jar</nativeLibrary>
+		<initializer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</initializer>
+		<finalizer>com.digitalstrawberry.nativeExtensions.anesounds.ANESounds</finalizer>
+	    </applicationDeployment>
+	</platform>
 	
 	<platform name="Android-x86">
 	    <applicationDeployment>

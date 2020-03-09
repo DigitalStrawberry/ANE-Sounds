@@ -70,6 +70,7 @@
             <arg line="-swc swc/${name}.swc"/>
             <arg line="-platform Android-ARM -C android/ ."/>
             <arg line="-platform Android-x86 -C android/ ." />
+            <arg line="-platform Android-ARM64 -C android/ ."/>
             <arg line="-platform default -C default/ ."/>
         </exec>
 
