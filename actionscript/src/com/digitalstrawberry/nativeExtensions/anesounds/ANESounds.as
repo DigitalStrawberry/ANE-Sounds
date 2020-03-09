@@ -16,7 +16,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 	public class ANESounds extends EventDispatcher
 	{
-		public static const VERSION:String = "1.8";
+		public static const VERSION:String = "1.9";
 		private static var _instance:ANESounds;
 		private static var sMaxStreams:int = 10;
 		private static var sStreamId:int = 0;
