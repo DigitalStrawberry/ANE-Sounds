@@ -62,6 +62,16 @@ if(streamId != 0)
 }
 ```
 
+You can also pause and resume a stream:
+
+```as3
+ANESounds.instance.pauseStream(streamId);
+
+...
+
+ANESounds.instance.resumeStream(streamId);
+```
+
 It is possible to stop all streams for a given sound, or all streams for all sounds:
 
 ```as3
@@ -102,6 +112,20 @@ else
 ```
 
 ### Changelog
+
+#### v1.10 (06/19/2020)
+
+* Added `pauseStream` method
+* Added `resumeStream` method
+
+#### v1.9 (03/09/2020)
+
+* Added support for Android 64bit
+
+#### v1.8 (02/24/2019)
+
+* Added `stopStreamsForSound` method
+* Added `stopAllStreams` method
 
 #### v1.7 (06/09/2018)
 
