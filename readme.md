@@ -113,6 +113,11 @@ else
 
 ### Changelog
 
+#### v1.11 (07/27/2020)
+
+* Fixed access of `null` sound channel
+* Fixed issue when accessing dictionary keys
+
 #### v1.10 (06/19/2020)
 
 * Added `pauseStream` method
