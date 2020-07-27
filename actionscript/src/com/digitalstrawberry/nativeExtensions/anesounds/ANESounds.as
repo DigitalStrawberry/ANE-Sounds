@@ -180,7 +180,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 
 						sStreamId++;
 						channel.addEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
-						_activeStreams[sStreamId] = channel;
+						setStream(sStreamId, channel);
 						soundInfo.addStream(sStreamId);
 
 						// Store the stream info to be able to pause/resume
@@ -217,7 +217,7 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 					// Stop all streams for this sound
 					for each(var streamId:int in soundInfo.streams)
 					{
-						if(streamId in _activeStreams)
+						if(hasStream(streamId))
 						{
 							trace("[ANESounds] Stopping", streamId, "for sound", soundId);
 							stopStream(streamId);
@@ -244,9 +244,9 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				for(var streamId:int in _activeStreams)
+				for(var streamId:String in _activeStreams)
 				{
-					stopStream(streamId);
+					stopStream(int(streamId));
 				}
 			}
 			else
@@ -280,9 +280,9 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				if(streamId in _activeStreams)
+				if(hasStream(streamId))
 				{
-					SoundChannel(_activeStreams[streamId]).stop();
+					getStream(streamId).stop();
 					deleteStream(streamId);
 				}
 			}
@@ -297,10 +297,10 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				if(streamId in _activeStreams)
+				if(hasStream(streamId))
 				{
 					// This channel will not be used anymore but keep it around in case the "stop" method is called
-					var channel:SoundChannel = _activeStreams[streamId];
+					var channel:SoundChannel = getStream(streamId);
 					_streamPositions[streamId] = channel.position;
 					channel.stop();
 					channel.removeEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
@@ -317,14 +317,14 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				if(streamId in _activeStreams && streamId in _streamPositions)
+				if(hasStream(streamId) && streamId in _streamPositions)
 				{
 					var position:Number = _streamPositions[streamId];
 					for each(var stream:StreamInfo in _streams)
 					{
 						var channel:SoundChannel = stream.sound.play(position, stream.loop, stream.transform);
 						channel.addEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
-						_activeStreams[sStreamId] = channel;
+						setStream(sStreamId, channel);
 					}
 				}
 			}
@@ -339,12 +339,12 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		{
 			if(_extContext == null)
 			{
-				if(streamId in _activeStreams)
+				if(hasStream(streamId))
 				{
 					var totalVolume:Number = leftVolume + rightVolume;
 					var volume:Number = totalVolume / 2;
 					var pan:Number = (rightVolume / totalVolume) - (leftVolume / totalVolume);
-					SoundChannel(_activeStreams[streamId]).soundTransform = new SoundTransform(volume, pan);
+					getStream(streamId).soundTransform = new SoundTransform(volume, pan);
 				}
 			}
 			else
@@ -370,20 +370,41 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 		private function onSoundChannelCompleted(event:Event):void
 		{
 			var channel:SoundChannel = SoundChannel(event.currentTarget);
-			for(var streamId:int in _activeStreams)
+			for(var streamId:String in _activeStreams)
 			{
 				if(channel == _activeStreams[streamId])
 				{
-					deleteStream(streamId);
+					deleteStream(int(streamId));
 					return;
 				}
 			}
 		}
 
 
+		private function hasStream(id:int):Boolean
+		{
+			var idString:String = String(id);
+			return _activeStreams[idString] != null;
+		}
+
+
+		private function getStream(id:int):SoundChannel
+		{
+			var idString:String = String(id);
+			return _activeStreams[idString] as SoundChannel;
+		}
+
+
+		private function setStream(id:int, channel:SoundChannel):void
+		{
+			var idString:String = String(id);
+			_activeStreams[idString] = channel;
+		}
+
+
 		private function deleteStream(streamId:int):void
 		{
-			var channel:SoundChannel = _activeStreams[streamId];
+			var channel:SoundChannel = getStream(streamId);
 			channel.removeEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
 
 			var length:int = _streams.length;
