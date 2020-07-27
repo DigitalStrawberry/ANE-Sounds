@@ -170,8 +170,15 @@ package com.digitalstrawberry.nativeExtensions.anesounds
 						var soundTransform:SoundTransform = new SoundTransform(volume, pan);
 
 						// Generate new stream for this sound
-						sStreamId++;
 						var channel:SoundChannel = sound.play(0, loop, soundTransform);
+
+						// Channel may not be created if playing too many sounds already
+						if(channel == null)
+						{
+							return 0;
+						}
+
+						sStreamId++;
 						channel.addEventListener(Event.SOUND_COMPLETE, onSoundChannelCompleted);
 						_activeStreams[sStreamId] = channel;
 						soundInfo.addStream(sStreamId);
